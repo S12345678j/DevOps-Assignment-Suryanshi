@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iris-model
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iris-model
+  template:
+    metadata:
+      labels:
+        app: iris-model
+    spec:
+      containers:
+      - name: iris-model
+        image: your-dockerhub-username/iris-api:latest
+        ports:
+        - containerPort: 5000
+  
+  ## this yaml file will create a pod in the k3s cluster and applictaion will start on the port 5000

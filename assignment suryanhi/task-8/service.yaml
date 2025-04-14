@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: iris-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: iris-model
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
+
+## this manifest will  create a service of type loadbalancer to access the application from the user's browser ,it will create an api endpoint

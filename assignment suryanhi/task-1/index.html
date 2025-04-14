@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>3-Tier Flask App</title>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <h1>Messages</h1>
+    <ul id="messages-list"></ul>
+
+    <h2>Add Message</h2>
+    <input type="text" id="message-input" placeholder="Type your message...">
+    <button onclick="sendMessage()">Submit</button>
+</body>
+</html>
