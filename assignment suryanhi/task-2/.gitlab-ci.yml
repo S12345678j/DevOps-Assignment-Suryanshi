@@ -1,0 +1,51 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  AZURE_APP_NAME: "myapp"
+  AZURE_RG: "pythonappp"
+  AZURE_PLAN: "ASP-pythonapppgroup-95a9 (B1:1)"
+  AZURE_LOCATION: "central-india"   
+  ZIP_FILE: "app.zip"
+
+before_script:
+  - echo "Installing Azure CLI..."
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+  - az version
+  - echo "Logging into Azure..."
+  - az login --service-principal -u $AZURE_CLIENT_ID -p $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+
+build:
+  stage: build
+  image: python:3.10
+  script:
+    - echo "Installing dependencies..."
+    - pip install -r requirements.txt
+    - echo "Zipping the application..."
+    - zip -r $ZIP_FILE .
+
+deploy:
+  stage: deploy
+  script:
+    - echo "Creating resource group (if not exists)..."
+    - az group create --name $AZURE_RG --location $AZURE_LOCATION
+
+    - echo "Creating App Service plan (if not exists)..."
+    - az appservice plan create --name $AZURE_PLAN --resource-group $AZURE_RG --sku B1 --is-linux || true
+
+    - echo "Creating Web App (if not exists)..."
+    - az webapp create \
+        --name $AZURE_APP_NAME \
+        --resource-group $AZURE_RG \
+        --plan $AZURE_PLAN \
+        --runtime "PYTHON|3.10" || true
+
+    - echo "Deploying the application..."
+    - az webapp deploy \
+        --resource-group $AZURE_RG \
+        --name $AZURE_APP_NAME \
+        --src-path $ZIP_FILE
+
+    - echo "App deployed successfully!"
+    - echo "URL: http://pythonmsgapp-dfa9dzh9bxewbvc4.eastus-01.azurewebsites.net
